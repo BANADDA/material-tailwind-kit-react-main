@@ -1,5 +1,13 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.css";
+// import { auth } from "@/firebase";
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+import { auth } from "@/firebase";
+import { registerWithEmailAndPassword } from "@/firebase";
+import { signInWithGoogle } from "@/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { Link } from "react-router-dom";
 import {
   MDBBtn,
   MDBContainer,
@@ -11,9 +19,72 @@ import {
   MDBCheckbox,
   MDBIcon,
 } from "mdb-react-ui-kit";
+// import { createUserWithEmailAndPassword } from "firebase/auth";
+import { NavLink, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export function Register() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [user, loading, error] = useAuthState(auth);
+  const navigate = useNavigate();
+  const register = () => {
+    if (!name) {toast.error("Please enter name")};
+    registerWithEmailAndPassword(name, email, password);
+    if (!email) {toast.error("Please enter email")};
+    registerWithEmailAndPassword(name, email, password);
+    if(auth/user-not-found) {toast.error("User not found")};
+    registerWithEmailAndPassword(name, email, password);
+    // if (!password) {toast.error("Please enter password")};
+    // registerWithEmailAndPassword(name, email, password);
+  };
+  // useEffect(() => {if (user) navigate("/home");
+  // }, [user]);
+  // const [email, setEmail] = useState("");
+  // const [password, setPassword] = useState("");
+
+  // const onSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   createUserWithEmailAndPassword(auth, email, password)
+  //     .then((userCredential) => {
+  //       // Signed in
+  //       const user = userCredential.user;
+  //       console.log(user);
+  //       // navigate("/sign-in");
+  //       sessionStorage.setItem(
+  //         "Auth Token",
+  //         response._tokenResponse.refreshToken
+  //       );
+  //     })
+  //     .catch((error) => {
+  //       console.log(error.code);
+  //       if (error.code == "auth/email-already-in-use") {
+  //         toast.error("The email address is already in use");
+  //       } else if (error.code == "auth/invalid-email") {
+  //         toast.error("The email address is not valid.");
+  //       } else if (error.code == "auth/operation-not-allowed") {
+  //         toast.error("Operation not allowed.");
+  //       } else if (error.code == "auth/weak-password") {
+  //         toast.error("The password is too weak.");
+  //       }
+  //       if (error.code === "auth/missing-password") {
+  //         toast.error("Missing password");
+  //       }
+  //     });
+  // };
+  // useEffect(() => {
+  //   let authToken = sessionStorage.getItem('Auth Token')
+
+  //   if (authToken) {
+  //     navigate('/home')
+  //   }
+  // }, [])
   return (
+  <>
+  <ToastContainer/>
     <MDBContainer
       fluid
       className="background-radial-gradient overflow-hidden p-4"
@@ -32,7 +103,7 @@ export function Register() {
             <span style={{ color: "	hsl(180, 100%, 50%)" }}> Chapter</span>
           </h1>
 
-          <p className="px-3 fw-bold" style={{ color: "hsl(0,0%,100%)"}}>
+          <p className="fw-bold px-3" style={{ color: "hsl(0,0%,100%)" }}>
             GDSC UCU Chapter is all about using technology to create positive
             change in the world. By becoming a member, you'll be part of a
             community that's dedicated to making a difference through
@@ -60,6 +131,8 @@ export function Register() {
                     label="First name"
                     id="form1"
                     type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                   />
                 </MDBCol>
 
@@ -78,12 +151,20 @@ export function Register() {
                 label="Email"
                 id="form3"
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                // onChange={(e) => setEmail(e.target.value)}
+                required
               />
               <MDBInput
                 wrapperClass="mb-4"
                 label="Password"
                 id="form4"
                 type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                // onChange={(e) => setPassword(e.target.value)}
+                required
               />
 
               <div className="d-flex justify-content-center mb-4">
@@ -95,7 +176,12 @@ export function Register() {
                 />
               </div>
 
-              <MDBBtn className="w-100 mb-4" size="md">
+              <MDBBtn
+                className="w-100 mb-4"
+                size="md"
+                onClick={register}
+                //  onClick={onSubmit}
+              >
                 sign up
               </MDBBtn>
 
@@ -125,6 +211,7 @@ export function Register() {
                   color="none"
                   className="mx-3"
                   style={{ color: "#1266f1" }}
+                  onClick={signInWithGoogle}
                 >
                   <MDBIcon fab icon="google" size="sm" />
                 </MDBBtn>
@@ -143,7 +230,8 @@ export function Register() {
         </MDBCol>
       </MDBRow>
     </MDBContainer>
-  );
+ </> 
+ );
 }
 
 export default Register;

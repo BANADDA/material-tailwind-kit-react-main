@@ -18,6 +18,7 @@ import {
   MDBInput,
   MDBCheckbox,
   MDBIcon,
+  MDBFile,
 } from "mdb-react-ui-kit";
 // import { createUserWithEmailAndPassword } from "firebase/auth";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -28,60 +29,54 @@ export function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [image, setImage] = useState("");
   const [user, loading, error] = useAuthState(auth);
   const navigate = useNavigate();
-  const register = () => {
-    if (!name) {toast.error("Please enter name")};
-    registerWithEmailAndPassword(name, email, password);
-    if (!email) {toast.error("Please enter email")};
-    registerWithEmailAndPassword(name, email, password);
-    if(auth/user-not-found) {toast.error("User not found")};
-    registerWithEmailAndPassword(name, email, password);
-    // if (!password) {toast.error("Please enter password")};
-    // registerWithEmailAndPassword(name, email, password);
-  };
-  // useEffect(() => {if (user) navigate("/home");
-  // }, [user]);
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
 
-  // const onSubmit = async (e) => {
+  const [isRegistered, setIsRegistered] = useState(false); // create a state variable for tracking registration
+  const [isSubmitted, setIsSubmitted] = useState(false); // create a state variable for tracking submission
+  // const handleSignup = () => {
+  //   if (!name) {toast.error("Please enter name")};
+  //   registerWithEmailAndPassword(name, email, password);
+  //   if (!email) {toast.error("Please enter email")};
+  //   registerWithEmailAndPassword(name, email, password);
+  // };
+
+  useEffect(() => {
+    async function registerWithEmailAndPassword(email, password) {
+      try {
+        await registerWithEmailAndPassword(email, password);
+        // navigate("/login", { state: { message: "Signup successful!" } }); // remove this line
+        setIsRegistered(true); // set isRegistered to true when the function resolves successfully
+      } catch (error) {
+        toast.error(error.message);
+      }
+    }
+  
+    // only call the function if the user has submitted the form
+    if (isSubmitted) {
+      registerWithEmailAndPassword(email, password);
+    }
+  }, [email, password, isSubmitted]); // add isSubmitted as a dependency
+  
+  useEffect(() => {
+    // only navigate to the login route if the user has registered successfully
+    if (isRegistered) {
+      navigate("/login", { state: { message: "Signup successful!" } }); // pass a message in the state
+    }
+  }, [isRegistered]); // add isRegistered as a dependency
+
+  // const handleSignup = async (e) => {
   //   e.preventDefault();
 
-  //   createUserWithEmailAndPassword(auth, email, password)
-  //     .then((userCredential) => {
-  //       // Signed in
-  //       const user = userCredential.user;
-  //       console.log(user);
-  //       // navigate("/sign-in");
-  //       sessionStorage.setItem(
-  //         "Auth Token",
-  //         response._tokenResponse.refreshToken
-  //       );
-  //     })
-  //     .catch((error) => {
-  //       console.log(error.code);
-  //       if (error.code == "auth/email-already-in-use") {
-  //         toast.error("The email address is already in use");
-  //       } else if (error.code == "auth/invalid-email") {
-  //         toast.error("The email address is not valid.");
-  //       } else if (error.code == "auth/operation-not-allowed") {
-  //         toast.error("Operation not allowed.");
-  //       } else if (error.code == "auth/weak-password") {
-  //         toast.error("The password is too weak.");
-  //       }
-  //       if (error.code === "auth/missing-password") {
-  //         toast.error("Missing password");
-  //       }
-  //     });
-  // };
-  // useEffect(() => {
-  //   let authToken = sessionStorage.getItem('Auth Token')
-
-  //   if (authToken) {
-  //     navigate('/home')
+  //   try {
+  //     await registerWithEmailAndPassword(email, password);
+  //     toast.success('Signup successful!');
+  //     navigate('/login');
+  //   } catch (error) {
+  //     toast.error(error.message);
   //   }
-  // }, [])
+  // };
   return (
   <>
   <ToastContainer/>
@@ -124,6 +119,7 @@ export function Register() {
 
           <MDBCard className="bg-glass my-5">
             <MDBCardBody className="p-5">
+      {/* <MDBFile wrapperClass="mb-4" label='Upload Image' id='customFile' className="mb-4" value={image} onChange={(e) => setImage(e.target.value)} /> */}
               <MDBRow>
                 <MDBCol col="6">
                   <MDBInput
@@ -179,7 +175,7 @@ export function Register() {
               <MDBBtn
                 className="w-100 mb-4"
                 size="md"
-                onClick={register}
+                onClick={() => setIsSubmitted(true)}
                 //  onClick={onSubmit}
               >
                 sign up

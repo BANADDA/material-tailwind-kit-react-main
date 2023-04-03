@@ -21,8 +21,8 @@ export function Home() {
   return (
     <>
       <div className="relative flex h-screen content-center items-center justify-center pt-16 pb-32 ml-0">
-        <div className="absolute top-0 h-full w-full bg-[url('/img/GDSC.png')] bg-cover bg-center" />
-        <div className="absolute top-0 h-full w-full bg-black/50 bg-cover bg-center" />
+        <div className="absolute top-0 h-full w-full bg-[url('/img/logo.gif')] bg-cover bg-center" />
+        <div className="absolute top-0 h-full w-full bg-gray-500/50 bg-cover bg-center" />
         <div className="max-w-8xl container relative mx-auto">
           <div className="flex flex-wrap items-center">
             <div className="ml-auto mr-auto w-full px-4 text-center lg:w-8/12">
@@ -38,7 +38,7 @@ export function Home() {
               </Typography>
               <Typography
                 variant="h1"
-                color="white"
+                color="black"
                 className="mb-3 font-semibold"
               >
                 UCU Chapter
@@ -56,7 +56,7 @@ export function Home() {
                 </Typography>
               </div>
               <div className="flex justify-center gap-2 pt-5">
-                <Link to="/sign-up">
+                <Link to="/application">
                   <Button
                     variant="contained"
                     endIcon={<DoubleArrowIcon />}

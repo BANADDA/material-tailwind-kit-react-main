@@ -1,35 +1,9 @@
-// Import the functions you need from the SDKs you need
-// import { initializeApp } from "firebase/app";
-// import { getAnalytics } from "firebase/analytics";
-// ​​import {
-//     ​​  GoogleAuthProvider,
-//     ​​  getAuth,
-//     ​​  signInWithPopup,
-//     ​​  signInWithEmailAndPassword,
-//     ​​  createUserWithEmailAndPassword,
-//     ​​  sendPasswordResetEmail,
-//     ​​  signOut,
-//     ​​} from "firebase/auth";
-//     ​​import {
-//     ​​  getFirestore,
-//     ​​  query,
-//     ​​  getDocs,
-//     ​​  collection,
-//     ​​  where,
-//     ​​  addDoc,
-//     ​​} from "firebase/firestore";
-
-// // Initialize Firebase
-// const app = initializeApp(firebaseConfig);
-// const analytics = getAnalytics(app);
-// export const auth = getAuth(app);
-// ​​const db = getFirestore(app);
-// export default app;
-
-
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { initializeApp } from "firebase/app";
+import { getDatabase, ref, set } from "firebase/database";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useNavigate } from 'react-router-dom';
 import {
   GoogleAuthProvider,
   getAuth,
@@ -47,18 +21,23 @@ import {
   where,
   addDoc,
 } from "firebase/firestore";
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "AIzaSyCGtS2xz5l7BBFw9uajIPiok_yGg9sk4rc",
-    authDomain: "gdsc-ucu-chapter.firebaseapp.com",
-    projectId: "gdsc-ucu-chapter",
-    storageBucket: "gdsc-ucu-chapter.appspot.com",
-    messagingSenderId: "732298391687",
-    appId: "1:732298391687:web:fcade66dc54a2f9fb80822",
-    measurementId: "G-R28BXFSHB5"
+    apiKey: "AIzaSyAeZGQSuwdhdSYoQlO2lBXj6JubvNp-t1c",
+    authDomain: "data-science-ddebd.firebaseapp.com",
+    projectId: "data-science-ddebd",
+    storageBucket: "data-science-ddebd.appspot.com",
+    messagingSenderId: "516618929749",
+    appId: "1:516618929749:web:3d346e6f6bcf89df8936dc",
+    measurementId: "G-YXCFBR7STJ"
   };
+
+// Handling google signin
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 const googleProvider = new GoogleAuthProvider();
 const signInWithGoogle = async () => {
   try {
@@ -75,16 +54,18 @@ const signInWithGoogle = async () => {
       });
     }
   } catch (err) {
-    // console.error(err);
-    // alert(err.message);
-  }
-};
-const logInWithEmailAndPassword = async (email, password) => {
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch (error) {
-    console.error(error);
+    console.error(err);
     alert(err.message);
+  }
+}
+
+//function to control user login from firebase
+
+const logInWithEmailAndPassword = async (email, password) => {
+  
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
     if (error.code === 'auth/missing-password') {
         toast.error('Missing password');
       }
@@ -97,8 +78,11 @@ const logInWithEmailAndPassword = async (email, password) => {
       if (error.code === 'auth/user-not-found') {
         toast.error('User not found. Please check the Email');
       }
-  }
-};
+    }
+  };
+
+
+// Handing user registration in firestore
 const registerWithEmailAndPassword = async (name, email, password) => {
   try {
     const res = await createUserWithEmailAndPassword(auth, email, password);
@@ -110,19 +94,19 @@ const registerWithEmailAndPassword = async (name, email, password) => {
       email,
     });
   } catch (error) {
-    // console.error(error);
-    // alert(error.message);
     if (error.code === 'auth/missing-password') {
         toast.error('Missing password');
       }
       if (error.code === 'auth/invalid-email') {
         toast.error('Must provide email');
       }
-      if (error.code === 'auth/email-already-in-use') {
-        toast.error('Email already in use');
-      }
+      // if (error.code === 'auth/email-already-in-use') {
+      //   toast.error('Email already in use');
+      // }
   }
 };
+
+//password reset
 const sendPasswordReset = async (email) => {
   try {
     await sendPasswordResetEmail(auth, email);
@@ -135,6 +119,9 @@ const sendPasswordReset = async (email) => {
 const logout = () => {
   signOut(auth);
 };
+
+
+//exporting functions
 export {
   auth,
   db,

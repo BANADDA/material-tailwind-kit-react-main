@@ -5,19 +5,42 @@ import {
   BuildingLibraryIcon,
 } from "@heroicons/react/24/solid";
 import { Footer } from "@/widgets/layout";
-import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useNavigate } from "react-router-dom";
+import "./Dashboard.css";
+import { auth, db, logout } from "@/firebase";
+import { query, collection, getDocs, where } from "firebase/firestore";
 
 
 
 export function Profile() {
-  // const location = useLocation();
-  // const {img, name, position, affliation, skills, socials} = location.state;
-  
+
+  const [user, loading, error] = useAuthState(auth);
+  const [name, setName] = useState("");
+  const navigate = useNavigate();
+  const fetchUserName = async () => {
+    try {
+      const q = query(collection(db, "users"), where("uid", "==", user?.uid));
+      const doc = await getDocs(q);
+      const data = doc.docs[0].data();
+      setName(data.name);
+    } catch (err) {
+      console.error(err);
+      alert("An error occured while fetching user data");
+    }
+  };
+  useEffect(() => {
+    if (loading) return;
+    if (!user) return navigate("/");
+    fetchUserName();
+  }, [user, loading]);
+
   return (
     <>
       <section className="relative block h-[50vh]">
-        <div className="bg-profile-background absolute top-0 h-full w-full bg-[url('/img/background-1.jpg')] bg-cover bg-center" />
-        <div className="absolute top-0 h-full w-full bg-black/75 bg-cover bg-center" />
+        <div className="bg-profile-background absolute top-0 h-full w-full bg-[url('/img/logo.gif')] bg-cover bg-center" />
+        <div className="absolute top-0 h-full w-full bg-gray-500/75 bg-cover bg-center" />
       </section>
       <section className="relative bg-blue-gray-50/50 py-16 pb-0 mx-10 mt-20 mb-20">
         <div className="container mx-auto">
@@ -38,9 +61,14 @@ export function Profile() {
                 </div>
               </div>
               <div className="my-8 text-center">
+                <div className="align-middle">
                 <Typography variant="h2" color="blue-gray" className="mb-2">
-                  {name}
+                Name: {name}
                 </Typography>
+                <Typography variant="h2" color="blue-gray" className="mb-2">
+                Email: {user?.email}
+                </Typography>
+                </div>
                 <div className="mb-16 flex items-center justify-center gap-2">
                   <MapPinIcon className="-mt-px h-4 w-4 text-blue-gray-700" />
                   <Typography className="font-medium text-blue-gray-700">

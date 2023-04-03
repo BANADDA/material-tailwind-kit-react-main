@@ -1,14 +1,11 @@
 import "bootstrap/dist/css/bootstrap.css";
 import React, { useState, useEffect } from "react";
-// import { signInWithEmailAndPassword } from "firebase/auth";
-// import { auth } from "@/firebase";
-import { NavLink, useNavigate } from "react-router-dom";
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
-import { auth} from "@/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { signInWithGoogle } from "@/firebase";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import 'react-toastify/dist/ReactToastify.css';
+import { auth, logInWithEmailAndPassword, signInWithGoogle } from "@/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { onAuthStateChanged } from "firebase/auth";
+// import { useLocation } from "react-router-dom"; // import the useLocation hook
 import {
   MDBBtn,
   MDBContainer,
@@ -19,58 +16,45 @@ import {
   MDBInput,
   MDBIcon,
   MDBCheckbox,
+  MDBCardText,
 } from "mdb-react-ui-kit";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from "react-toastify";
 
 export function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [user, loading, error] = useAuthState(auth);
   const navigate = useNavigate();
-  const signin = () => {
-    if (!password) {toast.error("Please enter password")};
-    if (!email) {toast.error("Please enter email")};
-    signInWithEmailAndPassword(email, password);
-    navigate('/home')
-    // if (!password) {toast.error("Please enter password")};
-    // registerWithEmailAndPassword(name, email, password);
+
+  const login = () => {
+    logInWithEmailAndPassword(email, password);
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        //   navigate to hom if user is logged ine;
+        navigate("/home");
+      } else {
+        // User is signed out
+        // Redirect to login page
+        navigate("/login");
+      }
+    });
   };
-  // const navigate = useNavigate();
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
 
-  // const onLogin = (e) => {
-  //   e.preventDefault();
-  //   signInWithEmailAndPassword(auth, email, password)
-  //       .then((response) => {
-  //         navigate('/home')
-  //         sessionStorage.setItem('Auth Token', response._tokenResponse.refreshToken)
-  //       })
-  //       .catch((error) => {
-  //         console.log(error.code)
-  //         if (error.code === 'auth/missing-password') {
-  //           toast.error('Missing password');
-  //         }
-  //         if (error.code === 'auth/invalid-email') {
-  //           toast.error('Must provide email');
-  //         }
-  //         if (error.code === 'auth/user-not-found') {
-  //           toast.error('User not found. Please check the Email');
-  //         }
-  //       })
-  // };
+  // const { state } = useLocation(); // get the state from the location object
 
+  // // ...
+  
   // useEffect(() => {
-  //   let authToken = sessionStorage.getItem('Auth Token')
-
-  //   if (authToken) {
-  //     navigate('/home')
+  //   // display the message with toast if it exists
+  //   if (state && state.message) {
+  //     toast.success(state.message);
   //   }
-  // }, [])
+  // }, [state]); // add state as a dependency
 
   return (
     <>
-    <ToastContainer/>
+      <ToastContainer />
       <section className="relative ml-0 flex h-screen content-center items-center justify-center pb-5 pt-16 text-center">
         <div className="absolute top-0 h-full w-full bg-[url('/img/GDSC.png')] bg-cover bg-center" />
         <div className="absolute top-0 h-full w-full bg-black/50 bg-cover bg-center" />
@@ -99,7 +83,6 @@ export function SignIn() {
                         required
                         placeholder="Email address"
                         onChange={(e) => setEmail(e.target.value)}
-                        // onChange={(e) => setEmail(e.target.value)}
                       />
                       <MDBInput
                         wrapperClass="mb-4 w-100"
@@ -111,22 +94,14 @@ export function SignIn() {
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        // onChange={(e) => setPassword(e.target.value)}
                       />
 
-                      <MDBCheckbox
-                        name="flexCheck"
-                        id="flexCheckDefault"
-                        className="mb-4"
-                        label="Remember password"
-                      />
-
-                      <MDBBtn 
-                       size="sm"
-                      //  onClick={onLogin}
-                      onClick={() => signin(email, password)}
-                       >Login
-                       </MDBBtn>
+                      <MDBBtn
+                        size="sm"
+                        onClick={login}
+                      >
+                        Login
+                      </MDBBtn>
 
                       <hr className="my-2" />
 
@@ -135,9 +110,17 @@ export function SignIn() {
                         size="sm"
                         style={{ backgroundColor: "#dd4b39" }}
                       >
-                        <MDBIcon fab icon="google" className="mx-2" onClick={signInWithGoogle} />
+                        <MDBIcon
+                          fab
+                          icon="google"
+                          className="mx-2"
+                          onClick={signInWithGoogle}
+                        />
                         Sign in with google
                       </MDBBtn>
+                      <MDBCardText>
+                        <Link to="/reset">Forgot Password</Link>
+                      </MDBCardText>
                     </MDBCardBody>
                   </MDBCard>
                 </MDBCol>

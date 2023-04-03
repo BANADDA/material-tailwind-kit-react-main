@@ -9,13 +9,13 @@ export function Footer({ title, description, socials, menus, copyright }) {
       <div className="container mx-auto">
         <div className="flex flex-wrap pt-6 text-center lg:text-left">
           <div className="w-full px-4 lg:w-6/12">
-            <Typography variant="h4" className="mb-4" color="blue-gray">
+            <Typography variant="h4" className="mb-2" color="blue-gray">
               {title}
             </Typography>
             <Typography className="font-normal text-blue-gray-500">
               {description}
             </Typography>
-            <div className="mx-auto mt-6 mb-8 flex justify-center gap-2 md:mb-0 lg:justify-start">
+            <div className="mx-auto mt-6 mb-3 flex justify-center gap-2 md:mb-0 lg:justify-start">
               {socials.map(({ color, name, path }) => (
                 <a
                   key={name}
@@ -62,7 +62,7 @@ export function Footer({ title, description, socials, menus, copyright }) {
             ))}
           </div>
         </div>
-        <hr className="my-6 border-gray-300" />
+        <hr className="my-3 border-gray-300" />
         <div className="flex flex-wrap items-center justify-center md:justify-between">
           <div className="mx-auto w-full px-4 text-center">
             <Typography

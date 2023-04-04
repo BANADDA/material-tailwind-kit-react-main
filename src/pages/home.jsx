@@ -16,8 +16,37 @@ import { FeatureCard, TeamCard } from "@/widgets/cards";
 import { featuresData, teamData, contactData } from "@/data";
 import Guidelines from "@/widgets/layout/guidelines";
 import { Link } from "react-router-dom";
+import { auth } from "@/firebase";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export function Home() {
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Add an auth state change observer
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in
+        setUser(user);
+      } else {
+        // No user is signed in
+        setUser(null);
+      }
+    });
+  }, []);
+
+  // Login message
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state && location.state.successfulLogin) {
+      toast.success("Login successful!");
+    }
+  }, [location.state]);
+
   return (
     <>
       <div className="relative flex h-screen content-center items-center justify-center pt-16 pb-32 ml-0">
@@ -56,19 +85,19 @@ export function Home() {
                 </Typography>
               </div>
               <div className="flex justify-center gap-2 pt-5">
-                <Link to="/application">
-                  <Button
-                    variant="contained"
-                    endIcon={<DoubleArrowIcon />}
-                    sx={{
-                      backgroundColor: "red",
-                      "&:hover": { backgroundColor: "darkred" },
-                    }}
-                  >
-                    Join Club
-                  </Button>
-                </Link>
-              </div>
+      {/* Conditionally render the button based on the user variable */}
+      {user && (
+        <Link to="/application">
+          <Button
+            variant="contained"
+            endIcon={<DoubleArrowIcon />}
+            sx={{ backgroundColor: "red", "&:hover": { backgroundColor: "darkred" } }}
+          >
+            Join Club
+          </Button>
+        </Link>
+      )}
+    </div>
             </div>
           </div>
         </div>

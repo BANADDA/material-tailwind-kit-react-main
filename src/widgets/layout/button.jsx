@@ -24,7 +24,8 @@ export default function SimpleMenu() {
       const q = query(collection(db, "users"), where("uid", "==", user?.uid));
       const doc = await getDocs(q);
       const data = doc.docs[0].data();
-      setName(data.name);
+      setName(data.firstName);
+      setName(data.lastName);
     } catch (err) {
       console.error(err);
       alert("An error occured while fetching user data");

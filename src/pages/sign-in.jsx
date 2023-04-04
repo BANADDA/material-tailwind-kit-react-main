@@ -20,6 +20,8 @@ import {
 } from "mdb-react-ui-kit";
 import { ToastContainer, toast } from "react-toastify";
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,16 +29,30 @@ export function SignIn() {
   const navigate = useNavigate();
 
   const login = () => {
+
+    if (!password) {
+      toast.error("Please enter password");
+      return;
+    }
+    if (!email) {
+      toast.error("Please enter password");
+      return;
+    }
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email");
+      return;
+    }
+
     logInWithEmailAndPassword(email, password);
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        //   navigate to hom if user is logged ine;
+        // navigate to home if user is logged in
         navigate("/home");
-      } else {
-        // User is signed out
-        // Redirect to login page
-        navigate("/login");
+      }
+      if(!user) {
+        // show error message and stay on login page if user account not found
+        toast.error("Account not found");
       }
     });
   };

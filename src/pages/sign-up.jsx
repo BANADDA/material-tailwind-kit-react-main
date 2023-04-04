@@ -10,7 +10,7 @@ export function SignUp() {
         <div className="absolute top-0 h-full w-full bg-[url('/img/GDSC.png')] bg-cover bg-center" />
         <div className="absolute top-0 h-full w-full bg-black/50 bg-cover bg-center" />
         <div className="max-w-8xl container relative mx-auto">
-          <div className="flex flex-wrap items-center">
+          <div className="flex items-center">
             <Register />
           </div>
         </div>

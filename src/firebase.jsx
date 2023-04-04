@@ -55,7 +55,6 @@ const signInWithGoogle = async () => {
     }
   } catch (err) {
     console.error(err);
-    alert(err.message);
   }
 }
 
@@ -100,9 +99,9 @@ const registerWithEmailAndPassword = async (name, email, password) => {
       if (error.code === 'auth/invalid-email') {
         toast.error('Must provide email');
       }
-      // if (error.code === 'auth/email-already-in-use') {
-      //   toast.error('Email already in use');
-      // }
+      if (error.code === 'auth/email-already-in-use') {
+        toast.error('Email already in use');
+      }
   }
 };
 
@@ -113,7 +112,7 @@ const sendPasswordReset = async (email) => {
     alert("Password reset link sent!");
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    toast.error(err.message);
   }
 };
 const logout = () => {

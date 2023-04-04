@@ -25,58 +25,50 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
 export function Register() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [image, setImage] = useState("");
-  const [user, loading, error] = useAuthState(auth);
-  const navigate = useNavigate();
-
   const [isRegistered, setIsRegistered] = useState(false); // create a state variable for tracking registration
   const [isSubmitted, setIsSubmitted] = useState(false); // create a state variable for tracking submission
-  // const handleSignup = () => {
-  //   if (!name) {toast.error("Please enter name")};
-  //   registerWithEmailAndPassword(name, email, password);
-  //   if (!email) {toast.error("Please enter email")};
-  //   registerWithEmailAndPassword(name, email, password);
-  // };
+  
 
-  useEffect(() => {
-    async function registerWithEmailAndPassword(email, password) {
-      try {
-        await registerWithEmailAndPassword(email, password);
-        // navigate("/login", { state: { message: "Signup successful!" } }); // remove this line
-        setIsRegistered(true); // set isRegistered to true when the function resolves successfully
-      } catch (error) {
-        toast.error(error.message);
+  const handleSignup = async () => {
+    try {
+      if (!name) {
+        toast.error("Please enter name");
+        return;
       }
+      if (!email) {
+        toast.error("Please enter email");
+        return;
+      }
+      if (!emailRegex.test(email)) {
+        toast.error("Please enter a valid email");
+        return;
+      }
+      if (!password) {
+        toast.error("Please enter password");
+        return;
+      }
+      const checkbox = document.getElementById("flexCheckDefault");
+      if (!checkbox.checked) {
+        toast.error("Please agree to the terms and conditions");
+        return;
+      }
+      await registerWithEmailAndPassword(name, email, password);
+      setIsRegistered(true);
+      toast.success("Registration successful!");
+      setName("");
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      toast.error(error.message);
     }
-  
-    // only call the function if the user has submitted the form
-    if (isSubmitted) {
-      registerWithEmailAndPassword(email, password);
-    }
-  }, [email, password, isSubmitted]); // add isSubmitted as a dependency
-  
-  useEffect(() => {
-    // only navigate to the login route if the user has registered successfully
-    if (isRegistered) {
-      navigate("/login", { state: { message: "Signup successful!" } }); // pass a message in the state
-    }
-  }, [isRegistered]); // add isRegistered as a dependency
-
-  // const handleSignup = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     await registerWithEmailAndPassword(email, password);
-  //     toast.success('Signup successful!');
-  //     navigate('/login');
-  //   } catch (error) {
-  //     toast.error(error.message);
-  //   }
-  // };
+  };
   return (
   <>
   <ToastContainer/>
@@ -119,25 +111,15 @@ export function Register() {
 
           <MDBCard className="bg-glass my-5">
             <MDBCardBody className="p-5">
-      {/* <MDBFile wrapperClass="mb-4" label='Upload Image' id='customFile' className="mb-4" value={image} onChange={(e) => setImage(e.target.value)} /> */}
-              <MDBRow>
-                <MDBCol col="6">
+            <MDBRow>
+                <MDBCol col="10">
                   <MDBInput
                     wrapperClass="mb-4"
-                    label="First name"
+                    label="Full Names"
                     id="form1"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                  />
-                </MDBCol>
-
-                <MDBCol col="6">
-                  <MDBInput
-                    wrapperClass="mb-4"
-                    label="Last name"
-                    id="form2"
-                    type="text"
                   />
                 </MDBCol>
               </MDBRow>
@@ -175,7 +157,7 @@ export function Register() {
               <MDBBtn
                 className="w-100 mb-4"
                 size="md"
-                onClick={() => setIsSubmitted(true)}
+                onClick={() => handleSignup(true)}
                 //  onClick={onSubmit}
               >
                 sign up
